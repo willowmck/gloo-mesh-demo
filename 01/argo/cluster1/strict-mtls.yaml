@@ -6,7 +6,7 @@ metadata:
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
-  projects: "default"
+  project: "default"
   source:
     repoURL: https://github.com/willowmck/gloo-mesh-demo
     targetRevision: HEAD
