@@ -15,16 +15,16 @@ We also assume that you have the bookinfo application installed on both remote c
 
 ## Using Argo
 
-If you want to deploy any of these in a GitOps manner, Argo is supported.  Just substitute the path as the `argo/cluster-target` instead of `resources`.  For example, instead of 
+If you want to deploy any of these in a GitOps manner, Argo is supported.  Just remove the `kustomize` subpath.  For example, instead of 
 
 ```
-kubectl apply -f 01/resources/strict-mtls.yaml --context cluster1
+kubectl apply -f 01/argo/remote/kustomize/strict-mtls.yaml --context cluster1
 ```
 
 use
 
 ```
-kubectl apply -f 01/argo/cluster1/strict-mtls.yaml --context cluster1
+kubectl apply -f 01/argo/remote/strict-mtls.yaml --context cluster1
 ```
 
 This assumes that you have an instance of ArgoCD running on each cluster.
@@ -36,14 +36,14 @@ This assumes that you have an instance of ArgoCD running on each cluster.
 Enable strict mTLS on both clusters.
 
 ```
-kubectl apply -f 01/resources/strict-mtls.yaml --context cluster1
-kubectl apply -f 01/resources/strict-mtls.yaml --context cluster2
+kubectl apply -f 01/argo/remote/kustomize/strict-mtls.yaml --context cluster1
+kubectl apply -f 01/argo/remote/kustomize/strict-mtls.yaml --context cluster2
 ```
 
 Create the VirtualMesh on the management cluster
 
 ```
-kubectl apply -f 01/virtual-mesh.yaml --context mgmt
+kubectl apply -f 01/argo/mgmt/kustomize/virtual-mesh.yaml --context mgmt
 ```
 
 You can then inspect certificates created for Istio by Gloo Mesh.

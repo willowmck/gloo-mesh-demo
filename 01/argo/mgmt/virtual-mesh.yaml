@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: strict-mtls
+  name: virtual-mesh
   namespace: argocd
   finalizers:
   - resources-finalizer.argocd.argoproj.io
@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://github.com/willowmck/gloo-mesh-demo
     targetRevision: HEAD
-    path: 01/argo/cluster1/kustomize/
+    path: 01/argo/mgmt/kustomize/
   destination:
     server: https://kubernetes.default.svc
     namespace: "istio-system"
