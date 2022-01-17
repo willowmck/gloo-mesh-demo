@@ -13,7 +13,7 @@ spec:
     path: 01/argo/mgmt/kustomize/
   destination:
     server: https://kubernetes.default.svc
-    namespace: "istio-system"
+    namespace: "gloo-mesh"
   syncPolicy:
     automated:
       prune: false
