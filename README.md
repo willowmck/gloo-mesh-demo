@@ -12,3 +12,45 @@ Each remote cluster should be [registered](https://docs.solo.io/gloo-mesh-enterp
 We also assume that you have the bookinfo application installed on both remote clusters.  We will use the setup below.
 
 ![Gloo Mesh](images/initial-setup.png)
+
+## Using Argo
+
+If you want to deploy any of these in a GitOps manner, Argo is supported.  Just substitute the path as the `argo/cluster-target` instead of `resources`.  For example, instead of 
+
+```
+kubectl apply -f 01/resources/strict-mtls.yaml --context cluster1
+```
+
+use
+
+```
+kubectl apply -f 01/argo/cluster1/strict-mtls.yaml --context cluster1
+```
+
+This assumes that you have an instance of ArgoCD running on each cluster.
+
+## Demo Steps
+
+### Creating the Virtual Mesh
+
+Enable strict mTLS on both clusters.
+
+```
+kubectl apply -f 01/resources/strict-mtls.yaml --context cluster1
+kubectl apply -f 01/resources/strict-mtls.yaml --context cluster2
+```
+
+Create the VirtualMesh on the management cluster
+
+```
+kubectl apply -f 01/virtual-mesh.yaml --context mgmt
+```
+
+You can then inspect certificates created for Istio by Gloo Mesh.
+
+```
+kubectl --context cluster1 exec -t deploy/reviews-v1 -c istio-proxy \
+-- openssl s_client -showcerts -connect ratings:9080
+kubectl --context cluster2 exec -t deploy/reviews-v1 -c istio-proxy \
+-- openssl s_client -showcerts -connect ratings:9080
+```
