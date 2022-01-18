@@ -54,3 +54,39 @@ kubectl --context cluster1 exec -t deploy/reviews-v1 -c istio-proxy \
 kubectl --context cluster2 exec -t deploy/reviews-v1 -c istio-proxy \
 -- openssl s_client -showcerts -connect ratings:9080
 ```
+
+### Access Control
+
+The VirtualMesh provides the facility to enable access control globally.  Here, we will use an overlay to modify the VirtualMesh to set `globalAccessPolicy` to `ENABLED`.
+
+Apply the access control policy.
+
+```
+kubectl apply -k 02/mgmt/enable-rbac --context mgmt
+```
+
+Refresh bookinfo and you should see `RBAC: access denied`.
+
+Add a policy to allow the ingress gateway to access productpage.
+
+```
+kubectl apply -k 02/mgmt/ingress-to-productpage --context mgmt
+```
+
+Refresh bookinfo and you should see the page appear again.
+
+Add a policy to allow productpage on cluster1 to talk to details and reviews.
+
+```
+kubectl apply -k 02/mgmt/productpage-to-details-reviews --context mgmt
+```
+
+Bookinfo should now show everything except for ratings.
+
+Add a policy to allow ratings to be viewed.
+
+```
+kubectl apply -k 02/mgmt/reviews-to-ratings --context mgmt
+```
+
+Refresh a few times and you should see black stars appear on roughly half the traffic.
