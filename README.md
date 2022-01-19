@@ -90,3 +90,39 @@ kubectl apply -k 02/mgmt/reviews-to-ratings --context mgmt
 ```
 
 Refresh a few times and you should see black stars appear on roughly half the traffic.
+
+### Multicluster Traffic
+
+### Failover
+
+### WASM
+
+Web Assembly (WASM) can be used to add progammability to an Envoy proxy whether that be through the gateway or at the sidecar.
+
+You can download the wasme utility from https://github.com/solo-io/wasm/releases.  The following commands assume that you download it to your $HOME/Downloads folder.
+
+```
+mkdir -p ~/.wasme/bin
+cp ~/Downloads/wasme-<os family>-<cputarget> ~/.wasme/bin/wasme
+chmod +x ~/.wasme/bin/wasme
+```
+
+Try `wasme -h` to make sure you can execute the binary.  You may need to open Security & Privacy settings to allow this binary to execute on Mac OS.
+
+```
+kubectl patch deployment reviews-v1 --context ${REMOTE_CLUSTER} --patch='{"spec":{"template": {"metadata": {"annotations": {"sidecar.istio.io/bootstrapOverride": "gloo-mesh-custom-envoy-bootstrap"}}}}}' --type=merge
+```
+
+Bootstrap the remote clusters with the ConfigMap for Envoy.
+
+```
+kubectl apply -f wasm/bootstrap/cluster1/kustomize/gloo-mesh-custom-envoy-bootstrap.yaml --context ${CLUSTER1}
+```
+
+You can use the wasme utility to create a filter skeleton.
+
+```
+wasme init assemblyscript-filter
+```
+
+This will create a template for you.  You can see an example in wasm/myfilter.
