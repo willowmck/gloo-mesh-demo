@@ -1,0 +1,25 @@
+apiVersion: networking.mesh.gloo.solo.io/v1
+kind: TrafficPolicy
+metadata:
+  name: ratings-fault-injection
+  namespace: gloo-mesh
+spec:
+  sourceSelector:
+  - kubeWorkloadMatcher:
+      labels:
+        app: reviews
+        version: v2
+      namespaces:
+      - default
+      clusters:
+      - cluster1
+  destinationSelector:
+  - kubeServiceRefs:
+      services:
+        - clusterName: cluster1
+          name: ratings
+          namespace: default
+  policy:
+    faultInjection:
+      fixedDelay: 2s
+      percentage: 100
