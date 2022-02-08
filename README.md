@@ -169,6 +169,27 @@ Restore service for reviews on cluster1
 kubectl --context ${CLUSTER1} patch deployment reviews-v1  --type json   -p '[{"op": "remove", "path": "/spec/template/spec/containers/0/command"}]'
 kubectl --context ${CLUSTER1} patch deployment reviews-v2  --type json   -p '[{"op": "remove", "path": "/spec/template/spec/containers/0/command"}]'
 ```
+
+### RBAC
+
+If you are using a cluster that has integrated IdP, then you should try this on some sample users provisioned within your IdP.  If you want to try this on a local cluster like `minikube`, `kind` or `k3d` then you can follow the [instructions to setup two local users](./00/users/README.md).
+
+The RBAC examples in the rbac directory assume that you have users in groups titled `infosec` and `devops`.
+
+Apply both roles to the `mgmt` cluster.
+
+```
+kubectl apply -f rbac/infosec-role.yaml
+kubectl apply -f rbac/devops-role.yaml
+```
+
+Along with the role bindings.
+
+```
+kubectl apply -f rbac/infosec-role-binding.yaml
+kubectl apply -f rbac/devops-role-binding.yaml
+```
+
 ### WASM
 
 Web Assembly (WASM) can be used to add progammability to an Envoy proxy whether that be through the gateway or at the sidecar.

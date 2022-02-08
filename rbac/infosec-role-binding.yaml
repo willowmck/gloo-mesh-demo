@@ -1,0 +1,14 @@
+apiVersion: rbac.enterprise.mesh.gloo.solo.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: gloo-mesh
+  name: infosec-role-binding
+  namespace: gloo-mesh
+spec:
+  roleRef:
+    name: infosec-role
+    namespace: gloo-mesh
+  subjects:
+    - kind: Group
+      name: infosec 

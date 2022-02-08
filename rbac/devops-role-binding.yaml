@@ -1,0 +1,14 @@
+apiVersion: rbac.enterprise.mesh.gloo.solo.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: gloo-mesh
+  name: devops-role-binding
+  namespace: gloo-mesh
+spec:
+  roleRef:
+    name: devops-role
+    namespace: gloo-mesh
+  subjects:
+    - kind: Group
+      name: devops

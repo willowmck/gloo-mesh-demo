@@ -1,0 +1,35 @@
+apiVersion: rbac.enterprise.mesh.gloo.solo.io/v1
+kind: Role 
+metadata:
+  name: devops-role
+  namespace: gloo-mesh
+spec:
+  trafficPolicyScopes:
+    - trafficPolicyActions:
+        - ALL
+      destinationSelectors:
+        - kubeServiceMatcher:
+            labels:
+              "*": "*"
+            namespaces:
+              - "bookinfo"
+              - "foo"
+            clusters:
+              - "*"
+        - kubeServiceRefs:
+            services:
+              - name: "*"
+                namespace: "bookinfo"
+                clusterName: "*"
+              - name: "*"
+                namespace: "foo"
+                clusterName: "*"
+      workloadSelectors:
+        - kubeWorkloadMatcher:
+            labels:
+              "*": "*"
+            namespaces:
+              - "bookinfo"
+              - "foo"
+            clusters:
+              - "*"

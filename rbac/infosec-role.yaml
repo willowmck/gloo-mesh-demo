@@ -1,0 +1,56 @@
+apiVersion: rbac.enterprise.mesh.gloo.solo.io/v1
+kind: Role 
+metadata:
+  name: infosec-role
+  namespace: gloo-mesh
+spec:
+  accessLogRecordScopes:
+    - workloadSelectors:
+        - kubeWorkloadMatcher:
+            clusters:
+              - "*"
+  accessPolicyScopes:
+    - identitySelectors:
+        - kubeIdentityMatcher:
+            clusters:
+              - "*"
+      destinationSelectors:
+        - kubeServiceMatcher:
+            clusters:
+              - "*"
+  virtualMeshScopes:
+    - virtualMeshActions:
+        - ALL
+      meshRefs:
+        - name: "*"
+          namespace: "*"
+  virtualDestinationScopes:
+    - virtualMeshRefs:
+        - name: "*"
+          namespace: "*"
+      meshRefs:
+        - name: "*"
+          namespace: "*"
+      destinationSelectors:
+        - kubeServiceMatcher:
+            clusters:
+              - "*"
+      destinations:
+        - kubeService:
+            name: "*"
+            namespace: "*"
+            clusterName: "*"
+  virtualGatewayScopes:
+    - ingressGatewaySelectors:
+        - destinationSelectors:
+          - kubeServiceMatcher:
+              clusters:
+                - "*"
+  virtualHostScopes:
+    - domains:
+        - "*"
+  wasmDeploymentScopes:
+    - workloadSelectors:
+        - kubeWorkloadMatcher:
+            clusters:
+              - "*"
