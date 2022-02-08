@@ -1,56 +1,125 @@
 apiVersion: rbac.enterprise.mesh.gloo.solo.io/v1
-kind: Role 
+kind: Role
 metadata:
-  name: infosec-role
+  name: infosec-
   namespace: gloo-mesh
 spec:
-  accessLogRecordScopes:
-    - workloadSelectors:
-        - kubeWorkloadMatcher:
-            clusters:
-              - "*"
-  accessPolicyScopes:
-    - identitySelectors:
-        - kubeIdentityMatcher:
-            clusters:
-              - "*"
-      destinationSelectors:
-        - kubeServiceMatcher:
-            clusters:
-              - "*"
-  virtualMeshScopes:
-    - virtualMeshActions:
-        - ALL
-      meshRefs:
-        - name: "*"
-          namespace: "*"
   virtualDestinationScopes:
-    - virtualMeshRefs:
-        - name: "*"
-          namespace: "*"
-      meshRefs:
-        - name: "*"
-          namespace: "*"
-      destinationSelectors:
+    - destinationSelectors:
         - kubeServiceMatcher:
             clusters:
-              - "*"
+              - '*'
+            labels:
+              '*': '*'
+            namespaces:
+              - '*'
+          kubeServiceRefs:
+            services:
+              - clusterName: '*'
+                name: '*'
+                namespace: '*'
       destinations:
         - kubeService:
-            name: "*"
-            namespace: "*"
-            clusterName: "*"
-  virtualGatewayScopes:
-    - ingressGatewaySelectors:
-        - destinationSelectors:
-          - kubeServiceMatcher:
-              clusters:
-                - "*"
-  virtualHostScopes:
-    - domains:
-        - "*"
+            clusterName: '*'
+            name: '*'
+            namespace: '*'
+      meshRefs:
+        - name: '*'
+          namespace: '*'
+      virtualMeshRefs:
+        - name: '*'
+          namespace: '*'
+  routeScopes:
+    - kubeServiceRefs:
+        - clusterName: '*'
+          name: '*'
+          namespace: '*'
+      routeTableSelectors:
+        - namespaces:
+            - '*'
+      staticDestinationSelectors:
+        - labels:
+            '*': '*'
+      virtualDestinationSelectors:
+        - namespaces:
+            - '*'
   wasmDeploymentScopes:
     - workloadSelectors:
         - kubeWorkloadMatcher:
             clusters:
-              - "*"
+              - '*'
+            labels:
+              '*': '*'
+            namespaces:
+              - '*'
+  accessLogRecordScopes:
+    - workloadSelectors:
+        - kubeWorkloadMatcher:
+            clusters:
+              - '*'
+            labels:
+              '*': '*'
+            namespaces:
+              - '*'
+  virtualHostScopes:
+    - domains:
+        - '*'
+  accessPolicyScopes:
+    - destinationSelectors:
+        - kubeServiceMatcher:
+            clusters:
+              - '*'
+            labels:
+              '*': '*'
+            namespaces:
+              - '*'
+          kubeServiceRefs:
+            services:
+              - clusterName: '*'
+                name: '*'
+                namespace: '*'
+          virtualDestinationMatcher:
+            labels:
+              '*': '*'
+            namespaces:
+              - '*'
+          virtualDestinationRefs:
+            virtualDestinations:
+              - name: '*'
+                namespace: '*'
+      identitySelectors:
+        - kubeIdentityMatcher:
+            clusters:
+              - '*'
+            namespaces:
+              - '*'
+          kubeServiceAccountRefs:
+            serviceAccounts:
+              - clusterName: '*'
+                name: '*'
+                namespace: '*'
+  virtualMeshScopes:
+    - meshRefs:
+        - name: '*'
+          namespace: '*'
+      virtualMeshActions:
+        - ALL
+  virtualGatewayScopes:
+    - ingressGatewaySelectors:
+        - destinationSelectors:
+            - kubeServiceMatcher:
+                clusters:
+                  - '*'
+                labels:
+                  '*': '*'
+                namespaces:
+                  - '*'
+              kubeServiceRefs:
+                services:
+                  - clusterName: '*'
+                    name: '*'
+                    namespace: '*'
+          portName: '*'
+      virtualHostSelectors:
+        - namespaces:
+            - '*'
