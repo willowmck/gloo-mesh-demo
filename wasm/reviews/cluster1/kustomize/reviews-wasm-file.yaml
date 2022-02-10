@@ -1,0 +1,22 @@
+apiVersion: networking.enterprise.mesh.gloo.solo.io/v1beta1
+kind: WasmDeployment
+metadata:
+  name: reviews-wasm
+  namespace: gloo-mesh
+spec:
+  filters:
+  - filterContext: SIDECAR_INBOUND
+    httpUriSource:
+      uri: file:///opt/filters/hellofilter.wasm  # File needs to be available as container mount
+    staticFilterConfig:
+      '@type': type.googleapis.com/google.protobuf.StringValue
+      value: "Gloo Mesh Enterprise"
+  workloadSelector:
+  - kubeWorkloadMatcher:
+      clusters:
+      - cluster1
+      labels:
+        app: reviews
+        version: v1
+      namespaces:
+      - default
