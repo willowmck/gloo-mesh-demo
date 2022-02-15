@@ -6,6 +6,7 @@ metadata:
 spec:
   filters:
   - localPathSource: /opt/filters/hellofilter.wasm  # File needs to be available as container mount
+    rootId: 0
   workloadSelector:
   - kubeWorkloadMatcher:
       clusters:
