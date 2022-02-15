@@ -5,12 +5,8 @@ metadata:
   namespace: gloo-mesh
 spec:
   filters:
-  - filterContext: SIDECAR_INBOUND
-    httpUriSource:
-      uri: file:///opt/filters/hellofilter.wasm  # File needs to be available as container mount
-    staticFilterConfig:
-      '@type': type.googleapis.com/google.protobuf.StringValue
-      value: "Gloo Mesh Enterprise"
+  - localPathSource: /opt/filters/hellofilter.wasm  # File needs to be available as container mount
+    rootId: 0
   workloadSelector:
   - kubeWorkloadMatcher:
       clusters:
