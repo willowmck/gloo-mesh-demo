@@ -1,0 +1,7 @@
+spec:
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/bootstrapOverride: gloo-mesh-custom-envoy-bootstrap
+        sidecar.istio.io/userVolume: '[{"name":"hellofilter","configMap":{"name":"hellofilter"}}]'
+        sidecar.istio.io/userVolumeMount: '[{"mountPath":"/opt/filters/wasm","name":"hellofilter"}]'
