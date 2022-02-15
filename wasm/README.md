@@ -21,3 +21,23 @@ Now, we need to patch the deployment to add some annotations for Istio
 ```
 kubectl patch deployment reviews-v1 --patch-file reviews/cluster1/kustomize/patch-reviews-v1.yaml
 ```
+
+## Deploying WASM
+
+Now, apply the WASMDeployment to the management plane.
+
+```
+kubectl apply -f reviews/cluster1/kustomize/reviews-wasm-file.yaml
+```
+
+Inspect it to check the status.  It should show `FILTERS_DEPLOYED` against your chosen workload.
+
+## Test it
+
+Run a curl image in the default namespace on the remote cluster.
+
+```
+kubectl run -it curl --image=curlimages/curl:7.73.0 --rm -- sh
+
+# curl http://reviews:9080/reviews/1 -v
+```

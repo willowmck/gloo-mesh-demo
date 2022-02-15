@@ -7,6 +7,7 @@ static RegisterContextFactory register_Example(CONTEXT_FACTORY(PluginContext),
 bool PluginRootContext::onConfigure(size_t) { return true; }
 
 FilterHeadersStatus PluginContext::onResponseHeaders(uint32_t, bool) {
-  addResponseHeader("X-Wasm-custom", "hellofilter");
+  LOG_INFO("In onResponseHeaders");
+  addResponseHeader("hello", "world");
   return FilterHeadersStatus::Continue;
 }

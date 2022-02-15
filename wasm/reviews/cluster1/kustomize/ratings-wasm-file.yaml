@@ -1,23 +1,19 @@
 apiVersion: networking.enterprise.mesh.gloo.solo.io/v1beta1
 kind: WasmDeployment
 metadata:
-  name: reviews-wasm
+  name: ratings-wasm
   namespace: gloo-mesh
 spec:
   filters:
   - filterContext: SIDECAR_INBOUND
     localPathSource: /opt/filters/wasm/hellofilter.wasm  # File needs to be available as container mount
     rootId: "add_header"
-    vmId: "add_header"
-    staticFilterConfig:
-      '@type': type.googleapis.com/google.protobuf.StringValue
-      value: "Gloo Mesh Enterprise"
   workloadSelector:
   - kubeWorkloadMatcher:
       clusters:
       - cluster1
       labels:
-        app: reviews
+        app: ratings
         version: v1
       namespaces:
       - default
