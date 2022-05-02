@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export ISTIO_VERSION=1.11.7
+export ISTIO_VERSION=1.12.6
 curl -L https://istio.io/downloadIstio | sh -
 
 CLUSTER1=cluster1 
@@ -9,15 +9,17 @@ CLUSTER2=cluster2
 kubectl --context ${CLUSTER1} create ns istio-system
 kubectl --context ${CLUSTER1} create ns istio-gateways
 
-helm --kube-context=${CLUSTER1} upgrade --install istio-base ./istio-1.11.7/manifests/charts/base -n istio-system
+helm --kube-context=${CLUSTER1} upgrade --install istio-base ./istio-${ISTIO_VERSION}/manifests/charts/base -n istio-system
 
-helm --kube-context=${CLUSTER1} upgrade --install istio-1.11.7 ./istio-1.11.7/manifests/charts/istio-control/istio-discovery -n istio-system --values - <<EOF
-revision: 1-11
+helm --kube-context=${CLUSTER1} upgrade --install istio-${ISTIO_VERSION} ./istio-${ISTIO_VERSION}/manifests/charts/istio-control/istio-discovery -n istio-system --values - <<EOF
+revision: 1-12
 global:
   meshID: mesh1
   multiCluster:
     clusterName: cluster1
   network: network1
+  hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
+  tag: 1.12.6-solo
 meshConfig:
   trustDomain: cluster1
   accessLogFile: /dev/stdout
@@ -33,13 +35,16 @@ meshConfig:
       GLOO_MESH_CLUSTER_NAME: cluster1
 pilot:
   env:
+    PILOT_ENABLE_K8S_SELECT_WORKLOAD_ENTRIES: "false"
     PILOT_SKIP_VALIDATE_TRUST_DOMAIN: "true"
 EOF
 
-kubectl --context ${CLUSTER1} label namespace istio-gateways istio.io/rev=1-11
+kubectl --context ${CLUSTER1} label namespace istio-gateways istio.io/rev=1-12
 
-helm --kube-context=${CLUSTER1} upgrade --install istio-ingressgateway ./istio-1.11.7/manifests/charts/gateways/istio-ingress -n istio-gateways --values - <<EOF
-
+helm --kube-context=${CLUSTER1} upgrade --install istio-ingressgateway ./istio-${ISTIO_VERSION}/manifests/charts/gateways/istio-ingress -n istio-gateways --values - <<EOF
+global:
+  hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
+  tag: 1.12.6-solo
 gateways:
   istio-ingressgateway:
     name: istio-ingressgateway
@@ -56,8 +61,10 @@ gateways:
       targetPort: 8443
 EOF
 
-helm --kube-context=${CLUSTER1} upgrade --install istio-eastwestgateway ./istio-1.11.7/manifests/charts/gateways/istio-ingress -n istio-gateways --values - <<EOF
-
+helm --kube-context=${CLUSTER1} upgrade --install istio-eastwestgateway ./istio-${ISTIO_VERSION}/manifests/charts/gateways/istio-ingress -n istio-gateways --values - <<EOF
+global:
+  hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
+  tag: 1.12.6-solo
 gateways:
   istio-ingressgateway:
     name: istio-eastwestgateway
@@ -84,18 +91,24 @@ gateways:
       ISTIO_META_REQUESTED_NETWORK_VIEW: "network1"
 EOF
 
+sleep 30
+
+kubectl --context ${CLUSTER1} get pods -n istio-system && kubectl --context ${CLUSTER1} get pods -n istio-gateways
+
 kubectl --context ${CLUSTER2} create ns istio-system
 kubectl --context ${CLUSTER2} create ns istio-gateways
 
-helm --kube-context=${CLUSTER2} upgrade --install istio-base ./istio-1.11.7/manifests/charts/base -n istio-system
+helm --kube-context=${CLUSTER2} upgrade --install istio-base ./istio-${ISTIO_VERSION}/manifests/charts/base -n istio-system
 
-helm --kube-context=${CLUSTER2} upgrade --install istio-1.11.7 ./istio-1.11.7/manifests/charts/istio-control/istio-discovery -n istio-system --values - <<EOF
-revision: 1-11
+helm --kube-context=${CLUSTER2} upgrade --install istio-${ISTIO_VERSION} ./istio-${ISTIO_VERSION}/manifests/charts/istio-control/istio-discovery -n istio-system --values - <<EOF
+revision: 1-12
 global:
   meshID: mesh1
   multiCluster:
     clusterName: cluster2
   network: network1
+  hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
+  tag: 1.12.6-solo
 meshConfig:
   trustDomain: cluster2
   accessLogFile: /dev/stdout
@@ -111,13 +124,16 @@ meshConfig:
       GLOO_MESH_CLUSTER_NAME: cluster2
 pilot:
   env:
+    PILOT_ENABLE_K8S_SELECT_WORKLOAD_ENTRIES: "false"
     PILOT_SKIP_VALIDATE_TRUST_DOMAIN: "true"
 EOF
 
-kubectl --context ${CLUSTER2} label namespace istio-gateways istio.io/rev=1-11
+kubectl --context ${CLUSTER2} label namespace istio-gateways istio.io/rev=1-12
 
-helm --kube-context=${CLUSTER2} upgrade --install istio-ingressgateway ./istio-1.11.7/manifests/charts/gateways/istio-ingress -n istio-gateways --values - <<EOF
-
+helm --kube-context=${CLUSTER2} upgrade --install istio-ingressgateway ./istio-${ISTIO_VERSION}/manifests/charts/gateways/istio-ingress -n istio-gateways --values - <<EOF
+global:
+  hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
+  tag: 1.12.6-solo
 gateways:
   istio-ingressgateway:
     name: istio-ingressgateway
@@ -134,8 +150,10 @@ gateways:
       targetPort: 8443
 EOF
 
-helm --kube-context=${CLUSTER2} upgrade --install istio-eastwestgateway ./istio-1.11.7/manifests/charts/gateways/istio-ingress -n istio-gateways --values - <<EOF
-
+helm --kube-context=${CLUSTER2} upgrade --install istio-eastwestgateway ./istio-${ISTIO_VERSION}/manifests/charts/gateways/istio-ingress -n istio-gateways --values - <<EOF
+global:
+  hub: us-docker.pkg.dev/gloo-mesh/istio-workshops
+  tag: 1.12.6-solo
 gateways:
   istio-ingressgateway:
     name: istio-eastwestgateway
@@ -163,15 +181,22 @@ gateways:
 EOF
 
 sleep 30
-kubectl --context ${CLUSTER1} get pods -n istio-system && kubectl --context ${CLUSTER1} get pods -n istio-gateways
-
-sleep 30
 kubectl --context ${CLUSTER2} get pods -n istio-system && kubectl --context ${CLUSTER2} get pods -n istio-gateways
 
 export ENDPOINT_HTTP_GW_CLUSTER1=$(kubectl --context ${CLUSTER1} -n istio-gateways get svc istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].*}'):80
 export ENDPOINT_HTTPS_GW_CLUSTER1=$(kubectl --context ${CLUSTER1} -n istio-gateways get svc istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].*}'):443
 export HOST_GW_CLUSTER1=$(echo ${ENDPOINT_HTTP_GW_CLUSTER1} | cut -d: -f1)
 
+echo ""
 echo "ENDPOINT_HTTP_GW_CLUSTER1 is $ENDPOINT_HTTP_GW_CLUSTER1"
 echo "ENDPOINT_HTTPS_GW_CLUSTER1 is $ENDPOINT_HTTPS_GW_CLUSTER1"
 echo "HOST_GW_CLUSTER1 is $HOST_GW_CLUSTER1"
+
+export ENDPOINT_HTTP_GW_CLUSTER2=$(kubectl --context ${CLUSTER2} -n istio-gateways get svc istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].*}'):80
+export ENDPOINT_HTTPS_GW_CLUSTER2=$(kubectl --context ${CLUSTER2} -n istio-gateways get svc istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].*}'):443
+export HOST_GW_CLUSTER2=$(echo ${ENDPOINT_HTTP_GW_CLUSTER2} | cut -d: -f1)
+
+echo ""
+echo "ENDPOINT_HTTP_GW_CLUSTER2 is $ENDPOINT_HTTP_GW_CLUSTER2"
+echo "ENDPOINT_HTTPS_GW_CLUSTER2 is $ENDPOINT_HTTPS_GW_CLUSTER2"
+echo "HOST_GW_CLUSTER2 is $HOST_GW_CLUSTER2"
