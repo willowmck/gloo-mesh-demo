@@ -9,13 +9,14 @@ fi
 MGMT=mgmt 
 CLUSTER1=cluster1
 CLUSTER2=cluster2
+GLOO_MESH_VERSION=2.0.0-beta32
 
 helm repo add gloo-mesh-enterprise https://storage.googleapis.com/gloo-mesh-enterprise/gloo-mesh-enterprise 
 helm repo update
 kubectl --context ${MGMT} create ns gloo-mesh 
 helm upgrade --install gloo-mesh-enterprise gloo-mesh-enterprise/gloo-mesh-enterprise \
 --namespace gloo-mesh --kube-context ${MGMT} \
---version=2.0.0-beta19 \
+--version=${GLOO_MESH_VERSION} \
 --set glooMeshMgmtServer.ports.healthcheck=8091 \
 --set glooMeshUi.serviceType=LoadBalancer \
 --set mgmtClusterName=${MGMT} \
@@ -66,7 +67,7 @@ helm upgrade --install gloo-mesh-agent gloo-mesh-agent/gloo-mesh-agent \
   --set rate-limiter.enabled=false \
   --set ext-auth-service.enabled=false \
   --set cluster=cluster1 \
-  --version 2.0.0-beta19
+  --version ${GLOO_MESH_VERSION}
 
 kubectl apply --context ${MGMT} -f- <<EOF
 apiVersion: admin.gloo.solo.io/v2
@@ -96,16 +97,16 @@ helm upgrade --install gloo-mesh-agent gloo-mesh-agent/gloo-mesh-agent \
   --set rate-limiter.enabled=false \
   --set ext-auth-service.enabled=false \
   --set cluster=cluster2 \
-  --version 2.0.0-beta19
+  --version ${GLOO_MESH_VERSION}
 
 sleep 30
 pod=$(kubectl --context ${MGMT} -n gloo-mesh get pods -l app=gloo-mesh-mgmt-server -o jsonpath='{.items[0].metadata.name}')
 kubectl --context ${MGMT} -n gloo-mesh debug -it ${pod} --image=curlimages/curl -- curl http://localhost:9091/metrics | grep relay_push_clients_connected
 
 kubectl --context ${CLUSTER1} create namespace gloo-mesh-addons
-kubectl --context ${CLUSTER1} label namespace gloo-mesh-addons istio.io/rev=1-11
+kubectl --context ${CLUSTER1} label namespace gloo-mesh-addons istio.io/rev=1-12
 kubectl --context ${CLUSTER2} create namespace gloo-mesh-addons
-kubectl --context ${CLUSTER2} label namespace gloo-mesh-addons istio.io/rev=1-11
+kubectl --context ${CLUSTER2} label namespace gloo-mesh-addons istio.io/rev=1-12
 
 helm upgrade --install gloo-mesh-agent-addons gloo-mesh-agent/gloo-mesh-agent \
   --namespace gloo-mesh-addons \
@@ -113,7 +114,7 @@ helm upgrade --install gloo-mesh-agent-addons gloo-mesh-agent/gloo-mesh-agent \
   --set glooMeshAgent.enabled=false \
   --set rate-limiter.enabled=true \
   --set ext-auth-service.enabled=true \
-  --version 2.0.0-beta19
+  --version ${GLOO_MESH_VERSION}
 
 helm upgrade --install gloo-mesh-agent-addons gloo-mesh-agent/gloo-mesh-agent \
   --namespace gloo-mesh-addons \
@@ -121,4 +122,20 @@ helm upgrade --install gloo-mesh-agent-addons gloo-mesh-agent/gloo-mesh-agent \
   --set glooMeshAgent.enabled=false \
   --set rate-limiter.enabled=true \
   --set ext-auth-service.enabled=true \
-  --version 2.0.0-beta19
+  --version ${GLOO_MESH_VERSION}
+
+sleep 30
+
+cat <<EOF | kubectl --context ${MGMT} apply -f -
+apiVersion: admin.gloo.solo.io/v2
+kind: WorkspaceSettings
+metadata:
+  name: global
+  namespace: gloo-mesh
+spec:
+  options:
+    eastWestGateways:
+      - selector:
+          labels:
+            istio: eastwestgateway
+EOF
