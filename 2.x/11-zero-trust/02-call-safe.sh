@@ -1,8 +1,8 @@
 #!/bin/bash
 
 CLUSTER1=cluster1
-
-if [[ `kubectl get ns | grep foo` == 1 ]]; then
+kubectl get ns | grep foo
+if [[ $? == 1 ]]; then
     kubectl --context ${CLUSTER1} create ns foo
     kubectl --context ${CLUSTER1} label ns foo istio-injection=enabled
 
