@@ -87,7 +87,7 @@ spec:
       labels:
         app: in-mesh
         version: v1
-        istio.io/rev: 1-11
+        istio.io/rev: 1-12
     spec:
       serviceAccountName: in-mesh
       containers:

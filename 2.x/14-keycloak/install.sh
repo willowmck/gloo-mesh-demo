@@ -18,7 +18,9 @@ if [[ $? == 0 ]]; then
     node=$(k3d node list | grep mgmt | grep loadbalancer | cut -f1 -d ' ')
     echo "Editing node $node"
     k3d node edit $node --port-add 18080:8080
-    export ENDPOINT_KEYCLOAK=localhost:18080
+    my_ip=$(ifconfig en0 | grep "inet " | awk -F'[: ]+' '{ print $2 }')
+    export ENDPOINT_KEYCLOAK=$my_ip:18080
+    export ENDPOINT_HTTPS_GW_CLUSTER1=$my_ip:8443
 else
     export ENDPOINT_KEYCLOAK=$(kubectl --context ${MGMT} -n keycloak get service keycloak -o jsonpath='{.status.loadBalancer.ingress[0].*}'):8080
 fi
@@ -54,3 +56,9 @@ curl -H "Authorization: Bearer ${KEYCLOAK_TOKEN}" -X POST -H "Content-Type: appl
 curl -H "Authorization: Bearer ${KEYCLOAK_TOKEN}" -X POST -H "Content-Type: application/json" -d '{"username": "user2", "email": "user2@solo.io", "enabled": true, "attributes": {"group": "users"}, "credentials": [{"type": "password", "value": "password", "temporary": false}]}' $KEYCLOAK_URL/admin/realms/master/users
 
 kubectl config use-context $current
+
+echo "You should export the following variables!"
+echo "export KEYCLOAK_SECRET=$KEYCLOAK_SECRET"
+echo "export KEYCLOAK_CLIENT=$KEYCLOAK_CLIENT"
+echo "export KEYCLOAK_URL=$KEYCLOAK_URL"
+echo "export ENDPOINT_HTTPS_GW_CLUSTER1=$ENDPOINT_HTTPS_GW_CLUSTER1"
