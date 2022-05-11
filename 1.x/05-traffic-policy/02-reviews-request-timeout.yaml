@@ -1,0 +1,22 @@
+apiVersion: networking.mesh.gloo.solo.io/v1
+kind: TrafficPolicy
+metadata:
+  name: reviews-request-timeout
+  namespace: gloo-mesh
+spec:
+  sourceSelector:
+  - kubeWorkloadMatcher:
+      labels:
+        app: productpage
+      namespaces:
+      - default
+      clusters:
+      - cluster1
+  destinationSelector:
+  - kubeServiceRefs:
+      services:
+        - clusterName: cluster1
+          name: reviews
+          namespace: default
+  policy:
+    requestTimeout: 0.5s

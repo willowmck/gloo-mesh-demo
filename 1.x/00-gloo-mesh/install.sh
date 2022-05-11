@@ -9,17 +9,19 @@ fi
 MGMT=mgmt 
 CLUSTER1=cluster1
 CLUSTER2=cluster2
-GLOO_MESH_VERSION=v1.2.25
+GLOO_MESH_VERSION=v1.2.26
 
 curl -sL https://run.solo.io/meshctl/install | sh -
 export PATH=$HOME/.gloo-mesh/bin:$PATH
+
+GLOO_MESH_VERSION=1.2.26
 
 helm repo add gloo-mesh-enterprise https://storage.googleapis.com/gloo-mesh-enterprise/gloo-mesh-enterprise 
 helm repo update
 kubectl --context ${MGMT} create ns gloo-mesh 
 helm upgrade --install gloo-mesh-enterprise gloo-mesh-enterprise/gloo-mesh-enterprise \
 --namespace gloo-mesh --kube-context ${MGMT} \
---version=1.2.25 \
+--version=${GLOO_MESH_VERSION} \
 --set rbac-webhook.enabled=true \
 --set licenseKey=${GLOO_MESH_LICENSE_KEY} \
 --set "rbac-webhook.adminSubjects[0].kind=Group" \
@@ -62,7 +64,7 @@ helm repo update
 
 helm upgrade --install enterprise-agent-addons enterprise-agent/enterprise-agent \
   --kube-context=${CLUSTER1} \
-  --version=1.2.25 \
+  --version=${GLOO_MESH_VERSION} \
   --namespace gloo-mesh-addons \
   --set enterpriseAgent.enabled=false \
   --set rate-limiter.enabled=true \
@@ -70,7 +72,7 @@ helm upgrade --install enterprise-agent-addons enterprise-agent/enterprise-agent
 
 helm upgrade --install enterprise-agent-addons enterprise-agent/enterprise-agent \
   --kube-context=${CLUSTER2} \
-  --version=1.2.25 \
+  --version=${GLOO_MESH_VERSION} \
   --namespace gloo-mesh-addons \
   --set enterpriseAgent.enabled=false \
   --set rate-limiter.enabled=true \
