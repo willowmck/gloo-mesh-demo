@@ -4,7 +4,7 @@ CLUSTER1=cluster1
 kubectl get ns | grep foo
 if [[ $? == 1 ]]; then
     kubectl --context ${CLUSTER1} create ns foo
-    kubectl --context ${CLUSTER1} label ns foo istio-injection=enabled
+    kubectl --context ${CLUSTER1} label ns foo istio.io/rev=1-12
 
     echo "Deployng sleep into namespace foo"
     kubectl --context ${CLUSTER1} apply -f sleep.yaml -n foo

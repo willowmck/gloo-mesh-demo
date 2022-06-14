@@ -9,7 +9,7 @@ fi
 MGMT=mgmt 
 CLUSTER1=cluster1
 CLUSTER2=cluster2
-GLOO_MESH_VERSION=2.0.0-beta35
+GLOO_MESH_VERSION=2.0.3
 
 helm repo add gloo-mesh-enterprise https://storage.googleapis.com/gloo-mesh-enterprise/gloo-mesh-enterprise 
 helm repo update

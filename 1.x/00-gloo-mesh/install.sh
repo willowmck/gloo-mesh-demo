@@ -9,12 +9,12 @@ fi
 MGMT=mgmt 
 CLUSTER1=cluster1
 CLUSTER2=cluster2
-GLOO_MESH_VERSION=v1.2.26
+export GLOO_MESH_VERSION=v1.2.27
 
 curl -sL https://run.solo.io/meshctl/install | sh -
 export PATH=$HOME/.gloo-mesh/bin:$PATH
 
-GLOO_MESH_VERSION=1.2.26
+GLOO_MESH_VERSION=1.2.27
 
 helm repo add gloo-mesh-enterprise https://storage.googleapis.com/gloo-mesh-enterprise/gloo-mesh-enterprise 
 helm repo update
