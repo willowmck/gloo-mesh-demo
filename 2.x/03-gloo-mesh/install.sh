@@ -9,7 +9,7 @@ fi
 MGMT=mgmt 
 CLUSTER1=cluster1
 CLUSTER2=cluster2
-GLOO_MESH_VERSION=2.0.8
+GLOO_MESH_VERSION=2.0.9
 
 helm repo add gloo-mesh-enterprise https://storage.googleapis.com/gloo-mesh-enterprise/gloo-mesh-enterprise 
 helm repo update
@@ -104,9 +104,9 @@ pod=$(kubectl --context ${MGMT} -n gloo-mesh get pods -l app=gloo-mesh-mgmt-serv
 kubectl --context ${MGMT} -n gloo-mesh debug -it ${pod} --image=curlimages/curl -- curl http://localhost:9091/metrics | grep relay_push_clients_connected
 
 kubectl --context ${CLUSTER1} create namespace gloo-mesh-addons
-kubectl --context ${CLUSTER1} label namespace gloo-mesh-addons istio.io/rev=1-12
+kubectl --context ${CLUSTER1} label namespace gloo-mesh-addons istio.io/rev=1-13
 kubectl --context ${CLUSTER2} create namespace gloo-mesh-addons
-kubectl --context ${CLUSTER2} label namespace gloo-mesh-addons istio.io/rev=1-12
+kubectl --context ${CLUSTER2} label namespace gloo-mesh-addons istio.io/rev=1-13
 
 helm upgrade --install gloo-mesh-agent-addons gloo-mesh-agent/gloo-mesh-agent \
   --namespace gloo-mesh-addons \
