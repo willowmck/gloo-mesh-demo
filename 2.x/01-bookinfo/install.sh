@@ -5,9 +5,10 @@ CLUSTER2=cluster2
 
 kubectl --context ${CLUSTER1} create ns bookinfo-frontends
 kubectl --context ${CLUSTER1} create ns bookinfo-backends
-curl https://raw.githubusercontent.com/istio/istio/1.12.6/samples/bookinfo/platform/kube/bookinfo.yaml -s|sed 's/docker\.io\/istio/us-central1-docker\.pkg\.dev\/solo-test-236622\/jmunozro/g'|tee bookinfo.yaml
-kubectl --context ${CLUSTER1} label namespace bookinfo-frontends istio.io/rev=1-12
-kubectl --context ${CLUSTER1} label namespace bookinfo-backends istio.io/rev=1-12
+curl https://raw.githubusercontent.com/istio/istio/release-1.13/samples/bookinfo/platform/kube/bookinfo.yaml > bookinfo.yaml
+kubectl --context ${CLUSTER1} label namespace bookinfo-frontends istio.io/rev=1-13
+kubectl --context ${CLUSTER1} label namespace bookinfo-backends istio.io/rev=1-13
+sleep 5
 # deploy the frontend bookinfo service in the bookinfo-frontends namespace
 kubectl --context ${CLUSTER1} -n bookinfo-frontends apply -f bookinfo.yaml -l 'account in (productpage)'
 kubectl --context ${CLUSTER1} -n bookinfo-frontends apply -f bookinfo.yaml -l 'app in (productpage)'
@@ -26,8 +27,9 @@ kubectl --context ${CLUSTER1} -n bookinfo-frontends get pods && kubectl --contex
 
 kubectl --context ${CLUSTER2} create ns bookinfo-frontends
 kubectl --context ${CLUSTER2} create ns bookinfo-backends
-kubectl --context ${CLUSTER2} label namespace bookinfo-frontends istio.io/rev=1-12
-kubectl --context ${CLUSTER2} label namespace bookinfo-backends istio.io/rev=1-12
+kubectl --context ${CLUSTER2} label namespace bookinfo-frontends istio.io/rev=1-13
+kubectl --context ${CLUSTER2} label namespace bookinfo-backends istio.io/rev=1-13
+sleep 5
 # deploy the frontend bookinfo service in the bookinfo-frontends namespace
 kubectl --context ${CLUSTER2} -n bookinfo-frontends apply -f bookinfo.yaml -l 'account in (productpage)'
 kubectl --context ${CLUSTER2} -n bookinfo-frontends apply -f bookinfo.yaml -l 'app in (productpage)'
