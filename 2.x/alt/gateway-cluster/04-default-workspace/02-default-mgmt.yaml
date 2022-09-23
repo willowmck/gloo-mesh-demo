@@ -1,0 +1,16 @@
+apiVersion: admin.gloo.solo.io/v2
+kind: WorkspaceSettings
+metadata:
+  name: default
+  namespace: gloo-mesh
+spec:
+  importFrom:
+  - workspaces:
+    - name: 'default'
+    resources:
+    - kind: ALL
+  exportTo:
+  - workspaces:
+    - name: 'default'
+    resources:
+    - kind: ALL

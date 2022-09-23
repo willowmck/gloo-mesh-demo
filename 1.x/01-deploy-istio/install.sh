@@ -3,11 +3,11 @@
 CLUSTER1=cluster1 
 CLUSTER2=cluster2 
 
-export ISTIO_VERSION=1.11.4
+export ISTIO_VERSION=1.13.8
 curl -L https://istio.io/downloadIstio | sh -
 
 kubectl --context ${CLUSTER1} create ns istio-system
-cat << EOF | ./istio-1.11.4/bin/istioctl --context ${CLUSTER1} install -y -f -
+cat << EOF | ./istio-1.13.8/bin/istioctl --context ${CLUSTER1} install -y -f -
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 metadata:
@@ -86,7 +86,7 @@ EOF
 
 
 kubectl --context ${CLUSTER2} create ns istio-system
-cat << EOF | ./istio-1.11.4/bin/istioctl --context ${CLUSTER2} install -y -f -
+cat << EOF | ./istio-1.13.8/bin/istioctl --context ${CLUSTER2} install -y -f -
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 metadata:
